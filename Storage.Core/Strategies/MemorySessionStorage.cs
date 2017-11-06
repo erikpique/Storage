@@ -49,7 +49,10 @@ namespace Storage.Core.Strategies
 
         public void Remove(string key)
         {
-            _storage.Context.Remove(key);
+            if (!string.IsNullOrEmpty(key))
+            {
+                _storage.Context.Remove(key);
+            }
         }
     }
 }
