@@ -19,7 +19,7 @@ namespace Storage.Core.Strategies
         {
             try
             {
-                _storage.Context.Add(key, input, new DateTimeOffset().Add(expire));
+                _storage.Context.Set(key, input, new DateTimeOffset(DateTime.UtcNow).Add(expire));
             }
             catch (Exception exception)
             {
@@ -32,19 +32,19 @@ namespace Storage.Core.Strategies
 
         public TOutput Get<TOutput>(string key, bool safe = false)
         {
-            try
-            {
-                return (TOutput)_storage.Context.Get(key);
-            }
-            catch (Exception exception)
+            var res = (TOutput)_storage.Context.Get(key);
+
+            if (res == null)
             {
                 if (!safe)
                 {
-                    throw new StorageException($"Unable to retrieve the object with '{key}' key from the store", exception);
+                    throw new StorageException($"Unable to retrieve the object with '{key}' key from the store");
                 }
 
                 return default(TOutput);
             }
+
+            return res;
         }
 
         public void Remove(string key)
